@@ -133,3 +133,16 @@ resource "aws_s3_bucket_logging" "this" {
   target_bucket = aws_s3_bucket.log_bucket.id
   target_prefix = "log/"
 }
+
+# STEP 8: Object locking in S3
+# This means that once an object is uploaded to the bucket, it cannot be deleted or overwritten for at least 1 day.
+resource "aws_s3_bucket_object_lock_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    default_retention {
+      mode = "COMPLIANCE"
+      days = 1
+    }
+  }
+}
