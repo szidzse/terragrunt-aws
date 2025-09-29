@@ -49,3 +49,30 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "s3_bucket_encrypt
     }
   }
 }
+
+# STEP 4: Setup READ ONLY policy on S3 bucket
+resource "aws_s3_bucket_public_access_block" "enable_public_access" {
+  bucket = aws_s3_bucket.this.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "bucket_read_policy" {
+  bucket = aws_s3_bucket.this.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.this.arn}/*"
+      }
+    ]
+  })
+
+  depends_on = [aws_s3_bucket_public_access_block.enable_public_access]
+}
