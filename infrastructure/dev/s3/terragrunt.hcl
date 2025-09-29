@@ -10,4 +10,5 @@ inputs = {
   env             = "dev"
   bucket_name     = "dev-bucket-88997766"
   upload_bucket_name  = "dev-upload-bucket-88997766"
+  log_bucket_name   = "dev-log-bucket-88997766"
 }
