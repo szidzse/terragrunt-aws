@@ -84,3 +84,37 @@ resource "aws_s3_bucket_versioning" "bucket_versioning" {
     status = "Enabled"
   }
 }
+
+# STEP 6: Lifecycle rules
+# After 30 days of becoming noncurrent, the object versions are transitioned to a STANDARD_IA for cheaper storage with less frequent access.
+# After 60 days, they are moved to GLACIER for long-term, archival storage.
+# After 90  days, these noncurrent object versions are deleted.
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    id = "config"
+
+    filter {
+      prefix = "config/"
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+
+    noncurrent_version_transition {
+      noncurrent_days = 60
+      storage_class   = "GLACIER"
+    }
+
+    status = "Enabled"
+  }
+
+  depends_on = [aws_s3_bucket_versioning.bucket_versioning]
+}
