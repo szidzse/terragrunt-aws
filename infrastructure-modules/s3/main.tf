@@ -76,3 +76,11 @@ resource "aws_s3_bucket_policy" "bucket_read_policy" {
 
   depends_on = [aws_s3_bucket_public_access_block.enable_public_access]
 }
+
+# STEP 5: Enable versioning on S3 bucket
+resource "aws_s3_bucket_versioning" "bucket_versioning" {
+  bucket = aws_s3_bucket.this.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
